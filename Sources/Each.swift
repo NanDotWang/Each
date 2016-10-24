@@ -128,13 +128,16 @@ open class Each {
         
         isStopped = false
         _performClosure = closure
-        _timer = Timer.scheduledTimer(
-            timeInterval: interval,
-            target: self,
-            selector: .Triggered,
-            userInfo: nil,
-            repeats: true
-        )
+        _timer = Timer.weak_scheduledTimerWithTimeInterval(ti: interval, repeats: true) { [weak self] in
+            guard let `self` = self else { return }
+            
+            let stopTimer = self._performClosure?().shouldStop ?? false
+            
+            guard stopTimer else { return }
+            self.stop()
+        }
+        
+        RunLoop.main.add(_timer!, forMode: .commonModes)
     }
     
     
