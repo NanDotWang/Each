@@ -11,18 +11,22 @@ import XCTest
 
 class EachTestCases: XCTestCase {
     
+    var timer: Each!
+    
     override func setUp() {
         super.setUp()
     }
     
     override func tearDown() {
         super.tearDown()
+        timer.stop()
     }
     
     func testEachSimple() {
         let exp = expectation(description: "Timer waiting")
         
-        _ = Each(1).seconds.perform {
+        timer = Each(1).seconds
+        timer.perform {
             exp.fulfill()
             return .stop
         }
@@ -37,14 +41,14 @@ class EachTestCases: XCTestCase {
     func testEachStopInClosure() {
         let exp = expectation(description: "Timer waiting")
         
-        let timer = Each(1).seconds
+        timer = Each(1).seconds
         timer.perform() {
             exp.fulfill()
             return .stop
         }
         
         waitForExpectations(timeout: 1.1) { error in
-            guard timer.isStopped else {
+            guard self.timer.isStopped else {
                 XCTFail("The timer is not stopped even if the closure returns .stop")
                 return
             }
@@ -57,7 +61,7 @@ class EachTestCases: XCTestCase {
     func testEachStopAndStartAgain() {
         let exp = expectation(description: "Timer waiting")
         
-        let timer = Each(1).seconds
+        timer = Each(1).seconds
         timer.perform() {
             exp.fulfill()
             return .stop
