@@ -22,17 +22,24 @@ private class ClosureWrapper<T> {
 // MARK: - Weak timer methods
 extension Timer {
     
+    /// Creates a weak `Timer` instance ready to use
+    ///
+    /// - parameter ti:      Time interval
+    /// - parameter repeats: Repeats or not
+    /// - parameter closure: Closure to execute
+    ///
+    /// - returns: Returns a `Timer` instance weak referenced
     static func weak_scheduledTimerWithTimeInterval(ti: TimeInterval, repeats: Bool, closure: ()->()) -> Timer {
         return self.scheduledTimer(
             timeInterval: ti,
             target: self,
-            selector: #selector(Timer.weak_blockInvoke(timer:)),
+            selector: #selector(Timer._weak_blockInvoke(timer:)),
             userInfo: ClosureWrapper(closure),
             repeats: repeats
         )
     }
     
-    @objc static func weak_blockInvoke(timer: Timer) {
+    @objc private static func _weak_blockInvoke(timer: Timer) {
         if let wrapper = timer.userInfo as? ClosureWrapper<()->()> {
             wrapper.closure()
         }
