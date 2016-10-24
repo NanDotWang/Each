@@ -136,8 +136,6 @@ open class Each {
             guard stopTimer else { return }
             self.stop()
         }
-        
-        RunLoop.main.add(_timer!, forMode: .commonModes)
     }
     
     
